@@ -117,13 +117,13 @@ class PersonService {
     String? currentImageUrl, // URL gambar yang sudah ada (jika ada)
   }) async {
     try {
-      // Create multipart request
+      // Buat request multipart
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('$baseUrl'),
+        Uri.parse('$baseUrl/$idCustomerService'), // PENTING: pakai ID
       );
 
-      // Add text fields
+      // Isi field teks
       request.fields['nim'] = nim;
       request.fields['title_issues'] = titleIssues;
       request.fields['description_issues'] = descriptionIssues;
@@ -131,11 +131,11 @@ class PersonService {
       request.fields['id_division_target'] = idDivisionTarget.toString();
       request.fields['id_priority'] = idPriority.toString();
 
-      // Add new image file if exists
+      // Tambahkan file gambar jika ada perubahan
       if (imageFile != null) {
         var fileStream = http.ByteStream(imageFile.openRead());
         var length = await imageFile.length();
-        
+
         var multipartFile = http.MultipartFile(
           'image',
           fileStream,
@@ -143,24 +143,24 @@ class PersonService {
           filename: imageFile.path.split('/').last,
           contentType: MediaType('image', 'jpeg'),
         );
-        
+
         request.files.add(multipartFile);
       } else if (currentImageUrl != null && currentImageUrl.isNotEmpty) {
-        // Jika tidak ada gambar baru tetapi ada gambar lama
+        // Jika tidak ada gambar baru, sertakan info gambar lama
         request.fields['existing_image_url'] = currentImageUrl;
       }
 
-      // Send request
+      // Kirim request
       var response = await request.send();
       var responseData = await response.stream.bytesToString();
 
       if (response.statusCode == 200) {
         return Person.fromJson(jsonDecode(responseData));
       } else {
-        throw Exception('Failed to update person (status: ${response.statusCode})');
+        throw Exception('Gagal memperbarui data (status: ${response.statusCode})');
       }
     } catch (e) {
-      throw Exception('Error updating person: $e');
+      throw Exception('Terjadi kesalahan saat update: $e');
     }
   }
 }

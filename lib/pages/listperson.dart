@@ -194,13 +194,10 @@ class _ListPersonState extends State<ListPerson> {
                                       ? ClipRRect(
                                           borderRadius: BorderRadius.circular(6),
                                           child: Image.network(
-                                            person.imageUrl,
-                                            width: 60,
-                                            height: 60,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) =>
-                                                const Icon(Icons.broken_image, size: 60),
-                                          ),
+                                            'https://simobile.singapoly.com${person.imageUrl}',
+                                            width: 50,
+                                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image),
+                                          )
                                         )
                                       : Container(
                                           width: 60,
